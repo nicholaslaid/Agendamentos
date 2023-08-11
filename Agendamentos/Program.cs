@@ -23,4 +23,9 @@ app.UseAuthorization();
 app.MapControllers();
 
 Config.GerarProdutos();
+
+Config.LoadConfigurations();
+
+Log.Save("API inicializada");
+
 app.Run();

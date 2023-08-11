@@ -1,9 +1,47 @@
-﻿using Agendamentos.Models;
+﻿using Agendamentos.Controllers;
+using Agendamentos.Models;
 
 namespace Agendamentos.Global
 {
     public class Config
     {
+        //variaveis lidas do appsettings.json
+        public static string fileName = string.Empty;
+        public static string folderName = string.Empty;
+
+
+        //caminhos
+        public static string basePath = string.Empty;
+        public static string filePath = string.Empty;
+        public static string folderPath = string.Empty;
+
+        //icms
+        public static string icms = string.Empty;
+        public static void LoadConfigurations()
+        {
+            IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+            AgendamentosController controller = new AgendamentosController();
+            try
+            {
+                fileName = config.GetValue<string>("Log:FileName");
+                folderName = config.GetValue<string>("Log:Foldername");
+
+
+                basePath = AppDomain.CurrentDomain.BaseDirectory;
+
+                folderPath = Path.Combine(basePath, folderName);
+
+                filePath = Path.Combine(folderPath, fileName);
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+        public static string automaticPermanentToken = string.Empty;
         public static List<Agendamento> Agen = new List<Agendamento>();
 
         public static void GerarProdutos()
@@ -38,20 +76,6 @@ namespace Agendamentos.Global
 
         }
 
-        /* public string GenerateToken(string user, string pass)
-        {
-            string result = string.Empty;
-           
-            if (user == "admin" && pass == "admin")
-            {
-                Guid guid = Guid.NewGuid();
-                result = guid.ToString();
-                Config.automaticDynamicToken = result;
-                Config.lifeTime = DateTime.Now.AddSeconds(Config.tempo);
-            }
-
-            return result;
-        }
-        */
+       
     }
 }

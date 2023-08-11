@@ -11,22 +11,32 @@ namespace Agendamentos.Controllers
         [HttpGet]
         [Route("GetAll")]
 
-        //foi
-        public JsonResult GetAll()
+  
+        public JsonResult GetAll(string token)
         {
             List<Agendamento> ag = new List<Agendamento>();
 
             try
             {
-                ag = Config.Agen;
-
-                if (ag.Count > 0)
+                Security security = new Security();
+                if (security.ValidateToken(token))
                 {
-                    return new JsonResult(new { success = true, agendamento = ag });
+                    ag = Config.Agen;
+
+                    if (ag.Count > 0)
+                    {
+                        Log.Save("Dados pegos com sucesso");
+                        return new JsonResult(new { success = true, agendamento = ag });
+                      
+                    }
+                    else
+                    {
+                        return new JsonResult(new { success = true, agendamento = "0 agendamentos na lista" });
+                    }
                 }
                 else
                 {
-                    return new JsonResult(new { success = true, agendamento = "0 agendamentos na lista" });
+                    return new JsonResult(new { success = false, msg = "Token invalido" });
                 }
             }
             catch (Exception ex)
@@ -37,16 +47,24 @@ namespace Agendamentos.Controllers
 
         [HttpGet]
         [Route("Get")]
-        //foi
-        public JsonResult Get(Guid id)
+        
+        public JsonResult Get(Guid id, string token)
         {
             Agendamento ag = new Agendamento();
 
             try
             {
-                ag = Config.Agen.Find(x => x.cod == id);
-
-                return new JsonResult(new { success = true, data = ag });
+                Security security = new Security();
+                if (security.ValidateToken(token))
+                {
+                    ag = Config.Agen.Find(x => x.cod == id);
+                    Log.Save("Dados pegos com sucesso com o codigo");
+                    return new JsonResult(new { success = true, data = ag });
+                }
+                else
+                {
+                    return new JsonResult(new { success = false, msg = "Token invalido" });
+                }
             }
             catch (Exception ex)
             {
@@ -56,14 +74,22 @@ namespace Agendamentos.Controllers
 
         [HttpPost]
         [Route("Add")]
-        //n foi
-        public JsonResult Add(Agendamento ag)
+        
+        public JsonResult Add(Agendamento ag, string token)
         {
             try
             {
-                Config.Agen.Add(ag);
-                return new JsonResult(new { success = true, msg = "Agendamento com " + ag.profissional + " adicionado com sucesso" });
-
+                Security security = new Security();
+                if (security.ValidateToken(token))
+                {
+                    Config.Agen.Add(ag);
+                    Log.Save("Dados adicionados com sucesso");
+                    return new JsonResult(new { success = true, msg = "Agendamento com " + ag.profissional + " adicionado com sucesso" });
+                }
+                else
+                {
+                    return new JsonResult(new { success = false, msg = "Token invalido" });
+                }
 
             }
             catch (Exception ex)
@@ -76,23 +102,32 @@ namespace Agendamentos.Controllers
         [HttpPut]
         [Route("Update")]
 
-        //foi
-        public JsonResult Update(Agendamento ag)
+      
+        public JsonResult Update(Agendamento ag, string token)
         {
             int idx = -1;
 
             try
             {
-                idx = Config.Agen.FindIndex(x => x.cod == ag.cod);
-
-                if (idx >= 0)
+                Security security = new Security();
+                if (security.ValidateToken(token))
                 {
-                    Config.Agen[idx] = ag;
-                    return new JsonResult(new { success = true, msg = "Consulta " + ag.cod + " alterada com sucesso" });
+                    idx = Config.Agen.FindIndex(x => x.cod == ag.cod);
+
+                    if (idx >= 0)
+                    {
+                        Config.Agen[idx] = ag;
+                        Log.Save("Dados alterados com sucesso");
+                        return new JsonResult(new { success = true, msg = "Consulta " + ag.cod + " alterada com sucesso" });
+                    }
+                    else
+                    {
+                        return new JsonResult(new { success = true, msg = "Produto não encontrado " });
+                    }
                 }
                 else
                 {
-                    return new JsonResult(new { success = true, msg = "Produto não encontrado " });
+                    return new JsonResult(new { success = false, msg = "Token invalido" });
                 }
             }
             catch (Exception ex)
@@ -104,23 +139,32 @@ namespace Agendamentos.Controllers
         [HttpDelete]
         [Route("Delete")]
 
-        //foi
-        public JsonResult Delete(Guid id)
+      
+        public JsonResult Delete(Guid id, string token)
         {
             int idx = -1;
 
             try
             {
-                idx = Config.Agen.FindIndex(x => x.cod == id);
-
-                if (idx >= 0)
+                Security security = new Security();
+                if (security.ValidateToken(token))
                 {
-                    Config.Agen.RemoveAt(idx);
-                    return new JsonResult(new { success = true, msg = "Consulta " + id + " excluida com sucesso" });
+                    idx = Config.Agen.FindIndex(x => x.cod == id);
+
+                    if (idx >= 0)
+                    {
+                        Config.Agen.RemoveAt(idx);
+                        Log.Save("Dados deletados com sucesso");
+                        return new JsonResult(new { success = true, msg = "Consulta " + id + " excluida com sucesso" });
+                    }
+                    else
+                    {
+                        return new JsonResult(new { success = true, msg = "Produto não encontrado " });
+                    }
                 }
                 else
                 {
-                    return new JsonResult(new { success = true, msg = "Produto não encontrado " });
+                    return new JsonResult(new { success = false, msg = "Token invalido" });
                 }
             }
             catch (Exception ex)
