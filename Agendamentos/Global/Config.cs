@@ -7,7 +7,7 @@ namespace Agendamentos.Global
         public static List<Agendamento> Agen = new List<Agendamento>();
 
         public static void GerarProdutos()
-        {
+        { 
             Agendamento ag = new Agendamento();
 
             Guid guid = Guid.NewGuid();
