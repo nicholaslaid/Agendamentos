@@ -114,7 +114,7 @@ namespace Agendamentos.Controllers
                 {
                     idx = Config.Agen.FindIndex(x => x.cod == ag.cod);
 
-                    if (idx >= 0)
+                    if (idx >= 0) 
                     {
                         Config.Agen[idx] = ag;
                         Log.Save("Dados alterados com sucesso");
