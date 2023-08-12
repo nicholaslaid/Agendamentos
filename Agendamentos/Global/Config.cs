@@ -14,9 +14,12 @@ namespace Agendamentos.Global
         public static string basePath = string.Empty;
         public static string filePath = string.Empty;
         public static string folderPath = string.Empty;
-
-        //icms
-        public static string icms = string.Empty;
+        //Credenciais de acesso ao banco
+        public static string dbHost = string.Empty;
+        public static string dbPort = string.Empty;
+        public static string dbName = string.Empty;
+        public static string dbUser = string.Empty;
+        public static string dbPass = string.Empty;
         public static void LoadConfigurations()
         {
             IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
@@ -25,7 +28,11 @@ namespace Agendamentos.Global
             {
                 fileName = config.GetValue<string>("Log:FileName");
                 folderName = config.GetValue<string>("Log:Foldername");
-
+                dbHost = config.GetValue<string>("dbHost");
+                dbPort = config.GetValue<string>("dbPort");
+                dbName = config.GetValue<string>("dbName");
+                dbUser = config.GetValue<string>("dbUser");
+                dbPass = config.GetValue<string>("dbPass");
 
                 basePath = AppDomain.CurrentDomain.BaseDirectory;
 
