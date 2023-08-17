@@ -2,7 +2,8 @@
 {
     public class Agendamento
     {
-        public Guid cod { get; set; }
+        public int id { get; set; }
+        public string cod { get; set; }
 
         public string nome { get; set; }
 

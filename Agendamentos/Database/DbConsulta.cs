@@ -14,23 +14,19 @@ namespace Agendamentos.Database
 
             try
             {
-                
-               
-                    //Gravação sem imagem
                     using (NpgsqlCommand cmd = new NpgsqlCommand())
                     {
-                        cmd.CommandText = @"INSERT INTO contatos (name, telefone, email) " +
-                                          @"VALUES (@name, @telefone, @email);";
+                        cmd.CommandText = @"INSERT INTO agendamentos (cod, name, profissional, tempo, data, consulta) " +
+                                          @"VALUES (@cod, @name, @profissional, @tempo, @data, @consulta);";
 
-
-                        cmd.Parameters.AddWithValue("@name", agendamento.nome);
+                    cmd.Parameters.AddWithValue("@cod", agendamento.cod);
+                    cmd.Parameters.AddWithValue("@name", agendamento.nome);
                         cmd.Parameters.AddWithValue("@consulta", agendamento.consulta);
                         cmd.Parameters.AddWithValue("@tempo", agendamento.tempo_previsto);
-                         cmd.Parameters.AddWithValue("@tempo", agendamento.profissional);
+                         cmd.Parameters.AddWithValue("@profissional", agendamento.profissional);
 
-                    cmd.Parameters.AddWithValue("@tempo", agendamento.cod);
 
-                    cmd.Parameters.AddWithValue("@tempo", agendamento.horario);
+                    cmd.Parameters.AddWithValue("@data", agendamento.horario);
 
                  
 
@@ -48,36 +44,35 @@ namespace Agendamentos.Database
         }
 
 
-        public Agendamento Get(int id)
+        public Agendamento Get(string cod)
         {
 
-            Agendamento result = new Agendamento();
+            Agendamento agen = new Agendamento();
             DataBaseAcess dba = new DataBaseAcess();
 
             try
             {
                 using (NpgsqlCommand cmd = new NpgsqlCommand())
                 {
-                    cmd.CommandText = @"SELECT * FROM Agendamentos " +
-                                      @"WHERE id = @id;";
+                    cmd.CommandText = @"SELECT * FROM agendamentos " +
+                                      @"WHERE cod = @cod;";
 
-                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@cod", cod);
 
                     using (cmd.Connection = dba.OpenConnection())
                     using (NpgsqlDataReader reader = cmd.ExecuteReader())
                     {
                         if (reader.Read())
                         {
-                            result.cod = Convert.ToInt32(reader["id"]);
-                            result.nome = reader["name"].ToString();
+                           agen.id = Convert.ToInt32(reader["id"]);
+                            agen.cod = reader["cod"].ToString();
+                            agen.horario = Convert.ToDateTime(reader["data"]);
+                            agen.tempo_previsto = Convert.ToInt32(reader["tempo"]);
+                            agen.nome = reader["name"].ToString();
+                            agen.profissional = reader["profissional"].ToString();
+                            agen.consulta = Convert.ToBoolean(reader["consulta"].ToString());
 
-                            result.consulta = Convert.ToBoolean(reader["consulta"]);
-                            result.profissional = reader["profissional"].ToString();
 
-                            result.tempo_previsto = Convert.ToDateTime(reader["data"]);
-                            result.tempo_previsto = Convert.ToInt32(reader["id"]);
-
-                        
                         }
                     }
                 }
@@ -85,55 +80,40 @@ namespace Agendamentos.Database
             catch (Exception ex)
             { }
 
-            return result;
+            return agen;
         }
 
-        public List<Contacts> GetAll()
+        public List<Agendamento> GetAll()
         {
-            List<Contacts> result = new List<Contacts>();
+            List<Agendamento> result = new List<Agendamento>();
             DataBaseAcess dba = new DataBaseAcess();
 
             try
             {
                 using (NpgsqlCommand cmd = new NpgsqlCommand())
                 {
-                    cmd.CommandText = @"SELECT p.id, p.name, p.email, p.telefone, p.image " +
-                                      @"FROM contatos p " +
-                                      @"ORDER BY p.id;";
+                    cmd.CommandText = @"SELECT a.id, a.cod, a.name, a.profissional, a.tempo, a.data, a.consulta " +
+                                      @"FROM agendamentos a " +
+                                      @"ORDER BY a.cod;";
 
                     using (cmd.Connection = dba.OpenConnection())
                     using (NpgsqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            Contacts contacts = new Contacts();
+                            Agendamento agen = new Agendamento();
 
-                            contacts.id = Convert.ToInt32(reader["id"]);
-                            contacts.name = reader["name"].ToString();
-                            contacts.email = reader["email"].ToString();
-                            contacts.telefone = reader["telefone"].ToString();
+                            agen.id = Convert.ToInt32(reader["id"]);
+                            agen.cod = reader["cod"].ToString();
+                            agen.horario = Convert.ToDateTime(reader["data"]);
+                            agen.tempo_previsto = Convert.ToInt32(reader["tempo"]);
+                            agen.nome = reader["name"].ToString();
+                            agen.profissional = reader["profissional"].ToString();
+                            agen.consulta = Convert.ToBoolean(reader["consulta"].ToString());
 
-                            //contacts.imageBmp = new Bitmap(Path.Combine(Config.appRootFolder, Config.imageFolder, contacts.image));
+                           
 
-                            if (reader["image"] != DBNull.Value)
-                                contacts.image = reader["image"].ToString();
-                            else
-                                contacts.image = string.Empty;
-
-                            if (!string.IsNullOrEmpty(contacts.image))
-                            {
-                                using (var stream = new FileStream(Path.Combine(Config.imageFolder, contacts.image), FileMode.Open))
-                                {
-                                    Bitmap bmp = new Bitmap(stream);
-                                    contacts.imageBmp = bmp;
-                                }
-                            }
-                            else
-                            {
-                                contacts.imageBmp = new Bitmap(Path.Combine(Config.imageDefaultPath));
-                            }
-
-                            result.Add(contacts);
+                            result.Add(agen);
 
                         }
                     }
@@ -145,7 +125,7 @@ namespace Agendamentos.Database
             return result;
         }
 
-        public bool Delete(int id)
+        public bool Delete(string id)
         {
             bool result = false;
             DataBaseAcess dba = new DataBaseAcess();
@@ -154,10 +134,10 @@ namespace Agendamentos.Database
             {
                 using (NpgsqlCommand cmd = new NpgsqlCommand())
                 {
-                    cmd.CommandText = @"DELETE FROM contatos " +
-                                      @"WHERE id = @id;";
+                    cmd.CommandText = @"DELETE FROM agendamentos " +
+                                      @"WHERE cod = @cod;";
 
-                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@cod", id);
 
                     using (cmd.Connection = dba.OpenConnection())
                     {
@@ -172,70 +152,37 @@ namespace Agendamentos.Database
             return result;
         }
 
-        public bool DeleteImageFile(string filePath)
-        {
-            bool result = false;
-            try
-            {
-                File.Delete(filePath);
-                result = true;
-            }
-            catch (Exception ex)
-            { }
-
-            return result;
-        }
-        public bool Update(Contacts contacts, bool image)
+      
+        public bool Update(Agendamento agen)
         {
             bool result = false;
             DataBaseAcess dba = new DataBaseAcess();
 
             try
             {
-                if (image)
-                {
+  
                     using (NpgsqlCommand cmd = new NpgsqlCommand())
                     {
-                        cmd.CommandText = @"UPDATE contatos " +
-                                          @"SET id = @id, name = @name, email = @email, image = @image, telefone = @telefone " +
-                                          @"WHERE id = @id;";
+                        cmd.CommandText = @"UPDATE agendamentos " +
+                                          @"SET cod = @cod, id = @id, name = @name, profissional = @profissional, tempo = @tempo, data = @data, consulta = @consulta " +
+                                          @"WHERE cod = @cod;";
 
-                        cmd.Parameters.AddWithValue("@id", contacts.id);
-                        cmd.Parameters.AddWithValue("@name", contacts.name);
-                        cmd.Parameters.AddWithValue("@email", contacts.email);
-                        cmd.Parameters.AddWithValue("@telefone", contacts.telefone);
-                        cmd.Parameters.AddWithValue("@image", contacts.image);
+                         cmd.Parameters.AddWithValue("@id", agen.id);
+                             cmd.Parameters.AddWithValue("@cod", agen.cod);
+                        cmd.Parameters.AddWithValue("@name", agen.nome);
+                        cmd.Parameters.AddWithValue("@profissional", agen.profissional);
+                        cmd.Parameters.AddWithValue("@consulta", agen.consulta);
+                        cmd.Parameters.AddWithValue("@tempo", agen.tempo_previsto);
+                        cmd.Parameters.AddWithValue("@data", agen.horario);
 
 
-                        using (cmd.Connection = dba.OpenConnection())
+                    using (cmd.Connection = dba.OpenConnection())
                         {
                             cmd.ExecuteNonQuery();
                             result = true;
                         }
                     }
-                }
-                else
-                {
-                    using (NpgsqlCommand cmd = new NpgsqlCommand())
-                    {
-                        cmd.CommandText = @"UPDATE contatos " +
-                                          @"SET id = @id, name = @name, email = @email, telefone = @telefone " +
-                                          @"WHERE id = @id;";
-
-                        cmd.Parameters.AddWithValue("@id", contacts.id);
-                        cmd.Parameters.AddWithValue("@name", contacts.name);
-                        cmd.Parameters.AddWithValue("@email", contacts.email);
-                        cmd.Parameters.AddWithValue("@telefone", contacts.telefone);
-
-
-
-                        using (cmd.Connection = dba.OpenConnection())
-                        {
-                            cmd.ExecuteNonQuery();
-                            result = true;
-                        }
-                    }
-                }
+                
             }
             catch (Exception ex)
             { }

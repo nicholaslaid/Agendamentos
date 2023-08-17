@@ -23,7 +23,7 @@ namespace Agendamentos.Global
         public static void LoadConfigurations()
         {
             IConfiguration config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-            AgendamentosController controller = new AgendamentosController();
+           
             try
             {
                 fileName = config.GetValue<string>("Log:FileName");
@@ -48,7 +48,7 @@ namespace Agendamentos.Global
 
             }
         }
-        public static string automaticPermanentToken = string.Empty;
+        
         public static List<Agendamento> Agen = new List<Agendamento>();
 
         public static void GerarProdutos()
@@ -58,7 +58,7 @@ namespace Agendamentos.Global
             Guid guid = Guid.NewGuid();
            
 
-            ag.cod = guid; 
+            ag.cod = guid.ToString(); 
             ag.nome = "Pedro";
             ag.profissional = "Maira";
             ag.tempo_previsto = 30;
@@ -71,7 +71,7 @@ namespace Agendamentos.Global
             Guid guidd = Guid.NewGuid();
 
 
-            ag.cod = guidd;
+            ag.cod = guidd.ToString();
             ag.nome = "Joao";
             ag.profissional = "Paulo";
             ag.tempo_previsto = 60;
